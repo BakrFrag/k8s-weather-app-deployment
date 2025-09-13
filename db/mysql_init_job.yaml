@@ -29,9 +29,10 @@ spec:
                       value: "3306"
 
                     - name: DB_NAME
-                      value: weather_app-db
+                      value: weather_app_db
 
                     - name: MYSQL_APP_USER
+                            
                       value: weather_app_user
 
                   command: ["/bin/sh", "-c"]
@@ -40,9 +41,9 @@ spec:
                     set -e
                     echo "Starting MySQL init script..."
                     mysql -h"${MYSQL_HOST}" -P"${MYSQL_PORT}" -uroot -p"${MYSQL_ROOT_PASSWORD}" <<SQL
-                    CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;
+                    CREATE DATABASE IF NOT EXISTS ${DB_NAME};
                     CREATE USER IF NOT EXISTS '$MYSQL_APP_USER'@'%' IDENTIFIED BY '$MYSQL_AUTH_PASSWORD';
-                    GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${MYSQL_APP_USER}'@'%';
+                    GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${MYSQL_APP_USER}'@'%';
                     FLUSH PRIVILEGES;
                     SQL
                     echo "Init script completed successfully."

@@ -16,33 +16,33 @@ spec:
       containers:
         - name: weather-auth-container
           image: afakharany/weatherapp-auth:lab
-          imagePullPolicy: ifNotPresent 
+          imagePullPolicy: Always 
           ports:
             - containerPort: 8080
 
           env:
             - name: DB_HOST 
-              value: "mysql"
+              value: mysql
 
             - name: DB_NAME
-              value: weather_app-db 
+              value: weather_app_db 
 
             - name: DB_USER 
-              value: weather-app-user 
+              value: weather_app_user 
             - name: DB_PORT 
-              value: 3306
+              value: "3306"
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mysql-secrets 
-                  value: auth-password
+                  key: auth-password
 
 
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: mysql-secrets 
-                  value: secret-key
+                  key: secret-key
 
 
 
