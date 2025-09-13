@@ -1,0 +1,51 @@
+version: batch/v1 
+kindd: Job 
+metadata:
+    name: mysql-init-job 
+spec:
+    template:
+        spec:
+            conatiners:
+                - name: mysql_job_container 
+                  image: mysql 
+                  env:
+                    - name: MYSQL_ROOT_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                            name: mysql-secrets 
+                            value: root-password 
+                    - name: MYSQL_AUTH_PASSWORD
+                      valueAFrom:
+                        secretKeyRef:
+                            name: mysql-secrets 
+                            value: auth-password
+
+
+                    - name: MYSQL_HOST 
+                      value: "mysql"
+
+                    - name: MYSQL_PORT
+                      value: "3306"
+
+                    - name: DB_NAME
+                      value: weatherapp
+
+                    - name: MYSQL_USER
+                      value: weatherappuser
+
+                  command: ["/bin/sh", "-c"]
+                  args: 
+                  - |
+                  mysql - h ${MYSQL_HOST} -u root -p {MYSQL_ROOT_PASSWORD} 
+                  <<EOF
+                  CREATE DATABASE ${DB_NAME} IF NOT EXISTS; 
+                  CREATE USER ${MYSQL_USER} IDENTIFIED BY ${MYSQL_AUTH_PASSWORD
+                  };
+                  GRANT ALL PRIVILEGES ON ${DB_NAME}.* to ${MYSQL_USER}@'%';
+                  FLUSH PRIVILEGES;
+                  EOF
+
+        restartPolicy: Never 
+
+        
+                  
