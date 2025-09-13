@@ -1,5 +1,6 @@
 apiVersion: apps/v1 
-kind: Statefulsets 
+kind: StatefulSet
+
 metadata: 
   name: mysql-statefulset 
 spec:
@@ -7,23 +8,24 @@ spec:
   replicas: 1 
   selector:
     matchLabels:
-       name: "mysql"
+       app: "mysql"
 
   template: 
     metadata: 
-      app: mysql 
+      labels:
+        app: mysql 
     spec:
-      conatiners:
+      containers:
         - name: mysql-container 
           image: mysql 
           env:
           - name: MYSQL_ROOT_PASSWORD
             valueFrom: 
-            secretKeyRef: 
-              - name: mysql-secrets 
-                value: mysql-root 
+              secretKeyRef: 
+                name: mysql-secrets 
+                key: root-password
 
-  VolumeClaimTemplates:
+  volumeClaimTemplates:
     - metadata:
         name: mysql-presist-storage 
       spec:
