@@ -12,30 +12,29 @@ spec:
     metadata:
       labels:
         api.kubernetes.io/name: weatherapp-weather
+    spec:
+      containers:
+        - name: weatherapp-weather 
+          image: afakharany/weatherapp-weather:lab
+          imagePullPolicy: IfNotPresent 
+          env:
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: rapid-apis
+                  key: api-key
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP 
 
-  containers:
-    - name: weatherapp-weather 
-      image: afakharany/weatherapp-weather:lab
-      imagePullPolicy: IfNotPresent 
-      env:
-        -name: APIKEY
-          valueFrom:
-            secretKeyRef:
-              name: rapid-apis
-              key: api-key
+          livenessProbe:
+            httpGet:
+              path: / 
+              port: http
 
-        ports:
-          - name: HTTP 
-            containerPort: 5000
-            protocol: TCP 
-
-        LivenessProbe:
-          httpGet:
-            path: / 
-            port: HTTP
-
-        readinessProbe:
-          httpGet:
-            path: / 
-            port: HTTP
+          readinessProbe:
+            httpGet:
+              path: / 
+              port: http
 
