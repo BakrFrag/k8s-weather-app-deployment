@@ -1,0 +1,38 @@
+apiVersion: apps/v1 
+kind: StatefulSet
+
+metadata: 
+  name: mysql-statefulset 
+spec:
+  serviceName: "mysql"
+  replicas: 1 
+  selector:
+    matchLabels:
+       app: "mysql"
+
+  template: 
+    metadata: 
+      labels:
+        app: mysql 
+    spec:
+      containers:
+        - name: mysql-container 
+          image: mysql 
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom: 
+              secretKeyRef: 
+                name: mysql-secrets 
+                key: root-password
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-presist-storage 
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: 2Gi
+
+

@@ -1,0 +1,54 @@
+apiVersion: batch/v1 
+kind: Job 
+metadata:
+    name: mysql-init-job 
+spec:
+    template:
+        spec:
+            restartPolicy: Never
+            containers:
+                - name: mysql-initial-job 
+                  image: mysql 
+                  env:
+                    - name: MYSQL_ROOT_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                            name: mysql-secrets 
+                            key: root-password 
+                    - name: MYSQL_AUTH_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                            name: mysql-secrets 
+                            key: auth-password
+
+
+                    - name: MYSQL_HOST 
+                      value: "mysql"
+
+                    - name: MYSQL_PORT
+                      value: "3306"
+
+                    - name: DB_NAME
+                      value: weather_app_db
+
+                    - name: MYSQL_APP_USER
+                            
+                      value: weather_app_user
+
+                  command: ["/bin/sh", "-c"]
+                  args: 
+                  - |
+                    set -e
+                    echo "Starting MySQL init script..."
+                    mysql -h"${MYSQL_HOST}" -P"${MYSQL_PORT}" -uroot -p"${MYSQL_ROOT_PASSWORD}" <<SQL
+                    CREATE DATABASE IF NOT EXISTS ${DB_NAME};
+                    CREATE USER IF NOT EXISTS '$MYSQL_APP_USER'@'%' IDENTIFIED BY '$MYSQL_AUTH_PASSWORD';
+                    GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${MYSQL_APP_USER}'@'%';
+                    FLUSH PRIVILEGES;
+                    SQL
+                    echo "Init script completed successfully."
+
+         
+
+        
+                  

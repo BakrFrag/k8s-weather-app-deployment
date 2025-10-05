@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: weatherapp-weather 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      api.kubernetes.io/name: weatherapp-weather 
+
+  template:
+    metadata:
+      labels:
+        api.kubernetes.io/name: weatherapp-weather
+    spec:
+      containers:
+        - name: weatherapp-weather 
+          image: afakharany/weatherapp-weather:lab
+          imagePullPolicy: IfNotPresent 
+          env:
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: rapid-apis
+                  key: api-key
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP 
+
+          livenessProbe:
+            httpGet:
+              path: / 
+              port: http
+
+          readinessProbe:
+            httpGet:
+              path: / 
+              port: http
+
